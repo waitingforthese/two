@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mahaesuvidha.chandrapanchangalarm.model.AaradhanaMaster
+import com.mahaesuvidha.chandrapanchangalarm.model.AaradhanaAudioCache
 import com.mahaesuvidha.chandrapanchangalarm.alarm.AlarmScheduler
 import com.mahaesuvidha.chandrapanchangalarm.alarm.AaradhanaVoiceSession
 import com.mahaesuvidha.chandrapanchangalarm.model.BirthProfile
@@ -44,6 +45,9 @@ fun AaradhanaScreen(
     val nakInfo = AaradhanaMaster.forNakshatra(moon.nakshatra.marathi)
     val yogaInfo = AaradhanaMaster.forYoga(panchang.yoga)
     val karanaInfo = AaradhanaMaster.forKarana(panchang.karana)
+    var audioReady by remember { mutableStateOf(false) }
+    var audioBusy by remember { mutableStateOf(false) }
+    var audioMessage by remember { mutableStateOf("") }
 
     Column(Modifier.fillMaxSize().background(Color(0xFF07111F)).statusBarsPadding().navigationBarsPadding()) {
         Surface(Modifier.fillMaxWidth(), color = Color(0xFF07111F), shadowElevation = 5.dp) {
@@ -77,9 +81,54 @@ fun AaradhanaScreen(
                 MantraRow("🌟 नक्षत्र", moon.nakshatra.marathi, nakInfo.deity, nakInfo.mantra)
                 MantraRow("🕉️ योग", panchang.yoga, yogaInfo.deity, yogaInfo.mantra)
                 MantraRow("🔱 करण", panchang.karana, karanaInfo.deity, karanaInfo.mantra)
+                Spacer(Modifier.height(10.dp))
+                Text("🎧 नक्षत्र / योग / करण ऑडिओ", color = Color(0xFFFFC83D), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("या दिवसाच्या तीन मंत्रांचे audio APK मध्ये ठेवलेले नाही. एकदा तयार/सेव्ह केल्यावर ते offline वापरता येतील.", color = Color.LightGray, fontSize = 12.sp)
+                Spacer(Modifier.height(6.dp))
+                Button(
+                    enabled = !audioBusy,
+                    onClick = {
+                        audioBusy = true
+                        audioMessage = "ऑडिओ तयार होत आहे…"
+                        val jobs = listOf(
+                            Triple("nakshatra", moon.nakshatra.marathi, nakInfo.mantra),
+                            Triple("yoga", panchang.yoga, yogaInfo.mantra),
+                            Triple("karana", panchang.karana, karanaInfo.mantra)
+                        )
+                        var remaining = jobs.size
+                        var failed = false
+                        jobs.forEach { (type, key, mantra) ->
+                            if (AaradhanaAudioCache.exists(context, type, key, mantra)) {
+                                remaining--
+                                if (remaining == 0) {
+                                    audioBusy = false; audioReady = true; audioMessage = if (failed) "काही audio तयार झाले नाहीत." else "नक्षत्र + योग + करण audio तयार झाले."
+                                }
+                            } else {
+                                AaradhanaAudioCache.synthesize(context, type, key, mantra) { ok ->
+                                    failed = failed || !ok
+                                    remaining--
+                                    if (remaining == 0) {
+                                        audioBusy = false; audioReady = !failed; audioMessage = if (failed) "काही audio तयार झाले नाहीत; पुन्हा प्रयत्न करा." else "नक्षत्र + योग + करण audio तयार झाले."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text(if (audioBusy) "⏳ तयार होत आहे…" else "⬇️ नक्षत्र + योग + करण ऑडिओ सेव्ह करा", fontWeight = FontWeight.Bold) }
+                if (audioMessage.isNotBlank()) Text(audioMessage, color = Color(0xFFFFC83D), fontSize = 12.sp)
             }
         }
         Spacer(Modifier.height(10.dp))
+        if (audioReady) {
+            Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF10253A))) {
+                Column(Modifier.padding(14.dp)) {
+                    Text("🎙️ Offline audio", color = Color(0xFFFFC83D), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("हे audio याच device वर सेव्ह झाले आहेत. पुढील आराधनेत local playback जोडता येईल.", color = Color.LightGray, fontSize = 12.sp)
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+        }
         Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF10253A))) {
             Column(Modifier.padding(14.dp)) {
                 Text("⚠️ ग्रह तारा आराधना", color = Color(0xFFFFC83D), fontWeight = FontWeight.Bold, fontSize = 18.sp)
