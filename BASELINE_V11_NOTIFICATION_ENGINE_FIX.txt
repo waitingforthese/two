@@ -1,0 +1,14 @@
+LifeAlarm V11 Notification Engine Fix
+Parent baseline: LifeAlarm_FRAMEWORK_USER_MANAGEMENT_V1_DETAILED_STUDY_POPUP_BIRTH_LAGNA_TABLE_V10_AARADHANA_EDITABLE_JAPA_PREVIEW_FIX.zip
+
+Fixes:
+- Mark fired one-shot alarms as consumed before scheduleAll(), preventing stale PendingIntent bookkeeping from blocking the next event.
+- Nakshatra Guidance 3-hour reminder now advances reliably after every delivery.
+- Exact alarm is preferred; if exact-alarm access is unavailable, allow-while-idle fallback is scheduled instead of silently dropping the alarm.
+- Notifications use a fresh HIGH-importance channel, PUBLIC lock-screen visibility, and BigTextStyle so notification text is visible.
+- AlarmReceiver holds a short partial wakelock while notification/TTS work is running, including locked/dozing devices.
+- Aaradhana/Voice TTS completion releases the wakelock safely.
+- scheduleAll() is synchronized to reduce scheduling races.
+- Existing Master Alarm, individual settings, Nakshatra 3-hour ON/OFF, editable japa count/interval/speech speed, and immediate Aaradhana preview are preserved.
+- Master OFF cancellation now also removes full voice-test IDs 214–216.
+- Notification timestamp is explicitly shown using the event time.

@@ -1,0 +1,20 @@
+LifeAlarm V14.2.2.4 BASELINE – Planetary Tara Aaradhana V1
+
+BASELINE LOCK: V14.2.2.4 BASELINE – Gochar Button Fix
+
+Feature:
+- New Planetary Tara Aaradhana screen/button for all 9 grahas.
+- Uses user's birth Nakshatra and current sidereal transit Nakshatra.
+- Identifies Vipat, Pratyari and Vadha Tara for each transit graha.
+- Shows current transit rashi, degree, nakshatra, pada, Tara, Nakshatra start/end.
+- Shows next Vipat/Pratyari/Vadha window start when available.
+- Independent master switch and independent per-graha switches.
+- Alarm is scheduled at the start of the next warning Tara-nakshatra window.
+- Alarm notification includes graha, Tara category and devotional mantra.
+- Aaradhana voice uses the existing saved Japa count and speech rate.
+- Added a section/button inside Nakshatra Aaradhana to open the planetary Tara screen.
+- Added Home button below Gochar Analysis.
+- Uses existing master alarm as the final global safety gate.
+
+Important interpretation:
+This is a traditional Tara-bala based devotional/observational feature, not a deterministic prediction of accidents or events.

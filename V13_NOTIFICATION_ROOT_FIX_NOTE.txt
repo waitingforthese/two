@@ -1,0 +1,7 @@
+BASELINE: LifeAlarm_FRAMEWORK_USER_MANAGEMENT_V1_DETAILED_STUDY_POPUP_BIRTH_LAGNA_TABLE_V10_AARADHANA_EDITABLE_JAPA_PREVIEW_FIX.zip
+
+BUILD: 3.8 / versionCode 18
+
+Fixes: notification permission re-check on every launch; fresh HIGH notification channels with default sound and public lock-screen visibility; removed silent notification flag; scheduleAll recovery on Activity resume; immediate notification test API; preserved V12 independent alarm scheduling and Aaradhana behavior.
+
+Validation: source brace checks PASS. Full Gradle build unavailable in this environment because project has no Gradle wrapper and system Gradle is unavailable.

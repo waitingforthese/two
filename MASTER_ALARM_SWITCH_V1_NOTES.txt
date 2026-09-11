@@ -1,0 +1,12 @@
+MASTER ALARM SWITCH V1
+
+Baseline: LifeAlarm_FRAMEWORK_USER_MANAGEMENT_V1_DETAILED_STUDY_POPUP_BIRTH_LAGNA_TABLE_V8_DOMAIN_STUDY.zip
+
+Changes:
+- Added a persistent Master Alarm ON/OFF switch beside Settings on the home screen.
+- Master OFF cancels all scheduled Life Alarm PendingIntents and all current notifications, and stops any active Aaradhana TTS session.
+- AlarmReceiver has a final master gate so stale/already-delivered PendingIntents cannot show, speak, or reschedule alarms while Master is OFF.
+- AlarmScheduler.scheduleAll() refuses to schedule anything while Master is OFF and cancels existing alarms.
+- Boot/package-replacement restoration respects the Master switch.
+- Individual alarm settings are preserved while Master is OFF. Turning Master ON restores alarms according to those individual settings.
+- Master defaults to ON for existing installs unless the user has explicitly turned it OFF.

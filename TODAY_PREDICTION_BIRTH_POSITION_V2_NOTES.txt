@@ -1,0 +1,11 @@
+TODAY PREDICTION BIRTH POSITION V2
+
+Baseline: LifeAlarm_V2_UI_REDESIGN_V2_TODAY_PREDICTION_V1
+
+Change:
+- Added Birth Chart position column to the Today's Prediction planetary transit table.
+- Each row now shows: Planet -> Birth-chart house + birth rashi -> Current transit house + transit rashi -> Score.
+- Birth planetary houses are calculated from the saved birth date/time and birth-place coordinates.
+- Birth-place coordinates are resolved at runtime using Android Geocoder; if unresolved, the UI shows "जन्मस्थिती उपलब्ध नाही" rather than inventing a house.
+- Birth houses use whole-sign houses from the sidereal ascendant (Lahiri basis), consistent with the app's sidereal calculations.
+- Existing transit rules, tara-bala, scoring and other app functionality are preserved.

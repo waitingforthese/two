@@ -1,0 +1,2 @@
+Baseline: LifeAlarm V14.2.1 – Framework Compile Fix (parent); V14.1 remains locked baseline.
+Change: Framework Reading Reference popup now shows both D-1 Lagna and Chandra Kundali stacked vertically. Birth planets are plain bold text with exact degrees. Current transit planets are shown in light pastel rounded boxes using a consistent planet-specific color, with planet name and exact degree. Transit positions are derived from the existing FrameworkCalculator data for today's date and placed by rashi in both reference charts. No alarm/notification/Aaradhana logic was changed.

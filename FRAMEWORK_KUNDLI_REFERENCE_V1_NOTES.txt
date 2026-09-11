@@ -1,0 +1,19 @@
+FRAMEWORK KUNDLI REFERENCE V1
+=============================
+Parent baseline: LifeAlarm V14.1 – Notification Compile Fix
+
+Change in this development build:
+- Framework detail screen gets a small "⚙ कुंडली" reference button in the top-right.
+- Button opens a readable popup containing TWO North-Indian style kundli visuals stacked vertically:
+  1) जन्मलग्न कुंडली (D-1), houses counted from Lagna.
+  2) चंद्र कुंडली (राशी कुंडली), houses counted from natal Moon sign.
+- Both charts are generated from the same BirthChartCalculator data used by the Framework.
+- Sign numbers and planet abbreviations are rendered inside the fixed North-Indian house layout.
+- The popup is vertically scrollable so the two charts remain readable on mobile screens.
+- No alarm/notification/Aaradhana logic was intentionally changed.
+- V14.1 remains the locked parent baseline; this is a Framework development candidate only.
+
+Validation performed:
+- Kotlin source brace/parenthesis balance checked.
+- ZIP integrity checked with unzip -t.
+- Full Gradle/GitHub build was not run locally because the project environment has no Gradle wrapper/system Gradle.

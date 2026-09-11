@@ -1,0 +1,12 @@
+LifeAlarm V12
+Baseline: LifeAlarm_V10_AARADHANA_EDITABLE_JAPA_PREVIEW_FIX, via V11 notification-engine fix.
+
+Changes:
+- Locked V10 functionality/UI preserved.
+- Special Aaradhana interval is now persistent across unrelated scheduleAll() calls.
+- Saving/changing Special Aaradhana interval deliberately resets its countdown from the save action.
+- Disabling Special Aaradhana clears its persisted next-run state.
+- Special Aaradhana reschedules its next run after the current 301 delivery completes.
+- Nakshatra Guidance 3-hour reminder continues to use its independent persisted alarm state.
+- Existing wake-lock, notification visibility/text, exact/inexact alarm fallback, duplicate guard, Master Alarm, boot restore and Aaradhana preview fixes retained.
+- Version: 3.6 / versionCode 16.

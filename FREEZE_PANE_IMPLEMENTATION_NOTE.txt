@@ -1,0 +1,5 @@
+BASELINE: LifeAlarm V14.2.2.1 – Framework Font Larger
+CHANGE: Freeze-pane headers on Framework and Home screens.
+Framework Detail: heading and Kundli button remain visible during reading scroll.
+Framework Home: heading remains visible during card-list scroll.
+Home Screen: Life Alarm header/master alarm/settings remain visible during home scroll.

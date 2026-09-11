@@ -1,0 +1,7 @@
+V14.2.2.5 follow-up fix
+
+- While a transit planet is currently in Vipat / Pratyari / Vadha and both planetary Tara master + planet switch are ON, its planetary mantra is appended to every scheduled Nakshatra Aaradhana fixed-time session.
+- The planetary mantra is repeated using the existing special Japa count and speech-rate settings.
+- When the planet leaves the warning Nakshatra, its mantra automatically stops being included.
+- Planetary Tara screen switches update local Compose state before scheduling and scheduleAll() runs off the UI thread so toggling does not unmount/close the screen.
+- Master switch uses the same non-blocking scheduling path.

@@ -1,0 +1,19 @@
+BASELINE: LifeAlarm_V2_UI_REDESIGN_V2_TODAY_PREDICTION_V2_BIRTH_POSITION
+IMPLEMENTATION: Framework + User Edit/Delete
+
+Added:
+- Framework button on home screen.
+- Medical Astrology, Business Astrology, Educational Astrology, Vastushastra sections.
+- Expandable planet cards with transit/birth position, subjects, house meaning, aspects, nakshatra/pada, reasoning and prediction.
+- 5-day comparison: previous 2 days, today, next 2 days.
+- Day-to-day micro change display.
+- Dynamic transit calculation using saved birth Moon sign as transit reference.
+- Birth chart house remains calculated from sidereal ascendant.
+- User Management screen with Select, Edit and Delete.
+- Edit recalculates birth Moon Rashi and Nakshatra.
+- Delete confirmation and persistent removal.
+- Existing Today Prediction and existing Kundali/other features preserved.
+
+IMPORTANT:
+- Medical Astrology content is presented as traditional astrological indicators, not medical diagnosis or treatment.
+- Build could not be executed in this environment because the supplied project has no Gradle wrapper and system Gradle is unavailable. Archive/source integrity was checked; Android build should be run in GitHub Actions/Android Studio before release.

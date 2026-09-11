@@ -1,0 +1,13 @@
+LifeAlarm V14.2.2.4 – COMPILE FIX BASELINE
+
+LOCKED BASELINE
+This build is the baseline for subsequent LifeAlarm changes unless the user explicitly requests a different baseline.
+
+Included baseline fixes/features:
+- V14.2.2.4 compile fixes.
+- Live transit single-source fix from V14.2.2.2.
+- Complete 9-planet transit analysis.
+- Home-screen Gochar Analysis feature button placed directly below User व्यवस्थापन.
+- Gochar Analysis removed from the Home header to avoid duplicate entry.
+- Kundli popup contains a Gochar Analysis button; Gochar Analysis can be opened while the Kundli popup remains open.
+- Existing Kundli, Freeze Pane, Framework, Aaradhana, alarms and other existing functionality are preserved.

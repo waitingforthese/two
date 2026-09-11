@@ -1,0 +1,7 @@
+BASELINE: LifeAlarm_FRAMEWORK_USER_MANAGEMENT_V1_DETAILED_STUDY_POPUP_BIRTH_LAGNA_TABLE_V6_READABLE_COMPARISON.zip
+VERSION: V7_READABLE_CONCEPT_UI
+LOCK RULE: V6 functionality/calculation is preserved; V7 changes Framework visual readability and visible domain-concept previews only.
+KEY RULES:
+- Birth house is counted from Janma Lagna.
+- Transit house is counted from Janma Moon sign.
+- Medical/Business/Education/Vastu concept details remain available in the study popup.

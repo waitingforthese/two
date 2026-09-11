@@ -1,0 +1,18 @@
+TODAY PREDICTION V1
+====================
+Added a separate "🔮 आजचे भाकीत" button to the main screen.
+
+The screen uses the saved user's birth Moon sign and birth Nakshatra, calculates
+current sidereal planetary positions with Swiss Ephemeris, derives transit houses
+from the Moon sign, applies the master Moon-sign transit rules, adds Tara Bala,
+and shows an overall Marathi daily interpretation.
+
+The existing alarm, Nakshatra Guidance, Aaradhana, Ghat Chakra and saved-user
+functionality are preserved.
+
+Validation:
+- TodayPredictionCalculator.kt compiles successfully against the project's
+  bundled Swiss Ephemeris jar with Kotlin 1.9.0.
+- Full Android Gradle build could not be run in this environment because the
+  project ZIP does not contain a Gradle wrapper and the environment has no
+  system Gradle installation.

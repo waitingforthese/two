@@ -1,0 +1,10 @@
+BASELINE / NEXT VERSION
+Parent baseline: LifeAlarm_FRAMEWORK_USER_MANAGEMENT_V1_DETAILED_STUDY_POPUP_BIRTH_LAGNA_TABLE_V9_MASTER_ALARM
+Feature baseline: V10_AARADHANA_EDITABLE_JAPA
+This fix adds:
+- Immediate Aaradhana preview after saving settings.
+- Preview uses current Nakshatra + Yoga + Karana mantras.
+- Preview uses the newly saved japa count and speech rate immediately.
+- Saved-settings confirmation popup displays japa count, interval and speech rate.
+- AlarmScheduler.scheduleAll() is called immediately after saving to reconcile the next scheduled alarm.
+- Preview is a user-requested test and is independent of Master Alarm ON/OFF.
