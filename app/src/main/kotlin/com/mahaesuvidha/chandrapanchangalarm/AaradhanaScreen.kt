@@ -261,19 +261,45 @@ fun AaradhanaScreen(
                                 }
                         }
                     }
-                    AaradhanaVoiceSession.speakAnnouncementAndSequence(
-                        context.applicationContext,
-                        399,
-                        previewAnnouncements,
-                        previewMantras.distinct(),
-                        count,
-                        null
+                    val cachedSteps = listOf(
+                        Triple("nakshatra", moon.nakshatra.marathi, nakInfo.mantra),
+                        Triple("yoga", panchang.yoga, yogaInfo.mantra),
+                        Triple("karana", panchang.karana, karanaInfo.mantra)
+                    ).map { (type, key, mantra) ->
+                        AaradhanaVoiceSession.AudioStep(
+                            audioFile = AaradhanaAudioCache.file(context, type, key).takeIf { it.exists() && it.length() > 2048 },
+                            fallbackText = mantra
+                        )
+                    }
+                    // Test/preview: local Nakshatra -> Yoga -> Karana audio first; all announcements last.
+                    AaradhanaVoiceSession.speakCachedSequenceThenAnnouncement(
+                        context.applicationContext, 399, cachedSteps, count, previewAnnouncements, null
                     )
                     savedPopup = true
                 }, modifier = Modifier.fillMaxWidth()) {
                     Text("💾 जतन करा + आत्ताच आराधना ऐका", fontWeight = FontWeight.Bold)
                 }
 
+                Spacer(Modifier.height(8.dp))
+                Text("🎧 Local Audio TEST", color = Color(0xFFFFC83D), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("प्रत्येक downloaded/local audio स्वतंत्रपणे तपासा. शेवटी तारा घोषणा TTS ने ऐकवली जाईल.", color = Color.LightGray, fontSize = 12.sp)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    OutlinedButton(onClick = {
+                        val f = AaradhanaAudioCache.file(context, "nakshatra", moon.nakshatra.marathi)
+                        if (f.exists() && f.length() > 2048) AaradhanaVoiceSession.speakCachedSequence(context, 501, listOf(AaradhanaVoiceSession.AudioStep(audioFile=f, fallbackText=nakInfo.mantra)), 1, null)
+                        else AaradhanaVoiceSession.speakPreview(context, 501, listOf(nakInfo.mantra), 1)
+                    }, modifier = Modifier.weight(1f)) { Text("⭐ नक्षत्र", fontWeight = FontWeight.Bold) }
+                    OutlinedButton(onClick = {
+                        val f = AaradhanaAudioCache.file(context, "yoga", panchang.yoga)
+                        if (f.exists() && f.length() > 2048) AaradhanaVoiceSession.speakCachedSequence(context, 502, listOf(AaradhanaVoiceSession.AudioStep(audioFile=f, fallbackText=yogaInfo.mantra)), 1, null)
+                        else AaradhanaVoiceSession.speakPreview(context, 502, listOf(yogaInfo.mantra), 1)
+                    }, modifier = Modifier.weight(1f)) { Text("✨ योग", fontWeight = FontWeight.Bold) }
+                    OutlinedButton(onClick = {
+                        val f = AaradhanaAudioCache.file(context, "karana", panchang.karana)
+                        if (f.exists() && f.length() > 2048) AaradhanaVoiceSession.speakCachedSequence(context, 503, listOf(AaradhanaVoiceSession.AudioStep(audioFile=f, fallbackText=karanaInfo.mantra)), 1, null)
+                        else AaradhanaVoiceSession.speakPreview(context, 503, listOf(karanaInfo.mantra), 1)
+                    }, modifier = Modifier.weight(1f)) { Text("🔱 करण", fontWeight = FontWeight.Bold) }
+                }
                 Spacer(Modifier.height(6.dp))
                 Text("ON असल्यास: नक्षत्र मंत्र → योग मंत्र → करण मंत्र • प्रत्येक मंत्रासाठी निवडलेली जप संख्या. आराधना रोजच्या fixed clock वेळेला होईल.", color = Color.LightGray, fontSize = 12.sp)
                 Text("ग्रह तारा आराधना सक्रिय असल्यास: ग्रह — विपत / प्रत्यारी / वध तारा घोषणा → त्या ग्रहाचा मंत्र → जप.", color = Color.LightGray, fontSize = 12.sp)

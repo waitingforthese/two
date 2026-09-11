@@ -48,6 +48,31 @@ object AaradhanaVoiceSession {
         playSteps(context.applicationContext, id, steps, eachCount.coerceAtLeast(1), 0)
     }
 
+    /** Cached audio sequence first; optional announcements are spoken only after all audio. */
+    fun speakCachedSequenceThenAnnouncement(context: Context, id: Int, steps: List<AudioStep>, eachCount: Int, finalAnnouncements: List<String>, result: android.content.BroadcastReceiver.PendingResult?, onFinished: (() -> Unit)? = null) {
+        stop(); sessionId = id; pending = result; finishedCallback = onFinished
+        playStepsThenAnnouncement(context.applicationContext, id, steps, eachCount.coerceAtLeast(1), 0, finalAnnouncements.filter { it.isNotBlank() })
+    }
+
+    private fun playStepsThenAnnouncement(context: Context, id: Int, steps: List<AudioStep>, count: Int, index: Int, announcements: List<String>) {
+        if (sessionId != id) return
+        if (index >= steps.size) {
+            if (announcements.isEmpty()) { stop(id); return }
+            speakAnnouncementsOnly(context, id, announcements, 0)
+            return
+        }
+        val step = steps[index]
+        playAudioOrFallback(context, id, step.copy(announcement = null), count) {
+            playStepsThenAnnouncement(context, id, steps, count, index + 1, announcements)
+        }
+    }
+
+    private fun speakAnnouncementsOnly(context: Context, id: Int, announcements: List<String>, index: Int) {
+        if (sessionId != id) return
+        if (index >= announcements.size) { stop(id); return }
+        speakOne(context, id, announcements[index]) { speakAnnouncementsOnly(context, id, announcements, index + 1) }
+    }
+
     private fun playSteps(context: Context, id: Int, steps: List<AudioStep>, count: Int, index: Int) {
         if (sessionId != id) return
         if (index >= steps.size) { stop(id); return }
