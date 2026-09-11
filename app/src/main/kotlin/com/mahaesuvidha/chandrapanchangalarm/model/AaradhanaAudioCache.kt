@@ -24,8 +24,10 @@ object AaradhanaAudioCache {
 
     fun synthesize(context: Context, type: String, key: String, mantra: String, onDone: (Boolean) -> Unit) {
         val target = file(context, type, key)
-        val tts = TextToSpeech(context.applicationContext) { status ->
-            if (status != TextToSpeech.SUCCESS) { onDone(false); return@TextToSpeech }
+        var engine: TextToSpeech? = null
+        engine = TextToSpeech(context.applicationContext) { status ->
+            val tts = engine
+            if (status != TextToSpeech.SUCCESS || tts == null) { onDone(false); return@TextToSpeech }
             val selected = listOf(Locale("hi", "IN"), Locale("sa", "IN"), Locale("mr", "IN"))
                 .firstOrNull { locale -> ttsAvailable(tts, locale) }
             if (selected != null) tts.language = selected
