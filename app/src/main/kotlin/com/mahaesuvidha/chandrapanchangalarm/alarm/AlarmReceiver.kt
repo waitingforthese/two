@@ -20,6 +20,8 @@ import com.mahaesuvidha.chandrapanchangalarm.model.LiveSunCalculator
 import com.mahaesuvidha.chandrapanchangalarm.model.NakshatraGuidanceCalculator
 import com.mahaesuvidha.chandrapanchangalarm.model.AaradhanaMaster
 import com.mahaesuvidha.chandrapanchangalarm.model.PlanetaryTaraAaradhanaCalculator
+import com.mahaesuvidha.chandrapanchangalarm.model.AaradhanaAudioCache
+import com.mahaesuvidha.chandrapanchangalarm.model.MantraAudioManager
 import com.mahaesuvidha.chandrapanchangalarm.model.Graha
 import com.mahaesuvidha.chandrapanchangalarm.settings.AlarmPrefs
 import com.mahaesuvidha.chandrapanchangalarm.settings.LocationPrefs
@@ -114,13 +116,14 @@ class AlarmReceiver : BroadcastReceiver() {
                 try {
                     val p = LivePanchangCalculator.getCurrentPanchangState(LocationPrefs(appContext).latitude, LocationPrefs(appContext).longitude)
                     val moon = LiveMoonCalculator.getCurrentMoonState()
-                    val mantra = when (id) {
-                        2, 131 -> AaradhanaMaster.forNakshatra(moon.nakshatra.marathi).mantra
-                        22, 132 -> AaradhanaMaster.forYoga(p.yoga).mantra
-                        else -> AaradhanaMaster.forKarana(p.karana).mantra
+                    val (type, key, mantra) = when (id) {
+                        2, 131 -> Triple("nakshatra", moon.nakshatra.marathi, AaradhanaMaster.forNakshatra(moon.nakshatra.marathi).mantra)
+                        22, 132 -> Triple("yoga", p.yoga, AaradhanaMaster.forYoga(p.yoga).mantra)
+                        else -> Triple("karana", p.karana, AaradhanaMaster.forKarana(p.karana).mantra)
                     }
                     val ap = com.mahaesuvidha.chandrapanchangalarm.settings.AaradhanaPrefs(appContext)
-                    AaradhanaVoiceSession.speakRepeated(appContext, id, mantra, ap.specialJapaCount, pendingResult) {
+                    val cached = AaradhanaAudioCache.file(appContext, type, key)
+                    AaradhanaVoiceSession.speakCachedSequence(appContext, id, listOf(AaradhanaVoiceSession.AudioStep(audioFile = cached, fallbackText = mantra)), ap.specialJapaCount, pendingResult) {
                         runCatching { if (wakeLock.isHeld) wakeLock.release() }
                     }
                 } catch (t: Throwable) {
@@ -137,12 +140,14 @@ class AlarmReceiver : BroadcastReceiver() {
                     val p = LivePanchangCalculator.getCurrentPanchangState(LocationPrefs(appContext).latitude, LocationPrefs(appContext).longitude)
                     val moon = LiveMoonCalculator.getCurrentMoonState()
                     val aarPrefs = com.mahaesuvidha.chandrapanchangalarm.settings.AaradhanaPrefs(appContext)
-                    val mantraList = mutableListOf(
-                        AaradhanaMaster.forNakshatra(moon.nakshatra.marathi).mantra,
-                        AaradhanaMaster.forYoga(p.yoga).mantra,
-                        AaradhanaMaster.forKarana(p.karana).mantra
+                    val nakMantra = AaradhanaMaster.forNakshatra(moon.nakshatra.marathi).mantra
+                    val yogaMantra = AaradhanaMaster.forYoga(p.yoga).mantra
+                    val karanaMantra = AaradhanaMaster.forKarana(p.karana).mantra
+                    val mantraSteps = mutableListOf(
+                        AaradhanaVoiceSession.AudioStep(audioFile = AaradhanaAudioCache.file(appContext, "nakshatra", moon.nakshatra.marathi), fallbackText = nakMantra),
+                        AaradhanaVoiceSession.AudioStep(audioFile = AaradhanaAudioCache.file(appContext, "yoga", p.yoga), fallbackText = yogaMantra),
+                        AaradhanaVoiceSession.AudioStep(audioFile = AaradhanaAudioCache.file(appContext, "karana", p.karana), fallbackText = karanaMantra)
                     )
-                    val taraAnnouncements = mutableListOf<String>()
 
                     // While a transit planet remains in Vipat / Pratyari / Vadha,
                     // include that planet's Aaradhana in every scheduled Nakshatra
@@ -159,16 +164,22 @@ class AlarmReceiver : BroadcastReceiver() {
                                 .forEach { row ->
                                     // Announce the exact planet + Tara relationship once before
                                     // that planet's mantra. The announcement itself is not repeated.
-                                    taraAnnouncements.add("${row.planet.marathi} — ${row.tara} तारा")
-                                    mantraList.add(AaradhanaMaster.forPlanet(row.planet).mantra)
+                                    val planetInfo = AaradhanaMaster.forPlanet(row.planet)
+                                    mantraSteps.add(
+                                        AaradhanaVoiceSession.AudioStep(
+                                            announcement = "${row.planet.marathi} — ${row.tara} तारा",
+                                            audioFile = MantraAudioManager.file(appContext, row.planet),
+                                            fallbackText = planetInfo.mantra
+                                        )
+                                    )
                                 }
                         }.onFailure {
                             android.util.Log.e("LifeAlarm", "Planetary Tara Aaradhana merge failed", it)
                         }
                     }
 
-                    AaradhanaVoiceSession.speakAnnouncementAndSequence(
-                        appContext, id, taraAnnouncements, mantraList.distinct(),
+                    AaradhanaVoiceSession.speakCachedSequence(
+                        appContext, id, mantraSteps,
                         aarPrefs.specialJapaCount, pendingResult
                     ) {
                         // The current 301 event has already been consumed. Reconcile
