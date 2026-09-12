@@ -167,7 +167,6 @@ class AlarmReceiver : BroadcastReceiver() {
                                     val planetInfo = AaradhanaMaster.forPlanet(row.planet)
                                     mantraSteps.add(
                                         AaradhanaVoiceSession.AudioStep(
-                                            announcement = "${row.planet.marathi} — ${row.tara} तारा",
                                             audioFile = MantraAudioManager.file(appContext, row.planet),
                                             fallbackText = planetInfo.mantra
                                         )
@@ -178,9 +177,17 @@ class AlarmReceiver : BroadcastReceiver() {
                         }
                     }
 
-                    AaradhanaVoiceSession.speakCachedSequence(
+                    val finalTaraAnnouncements = if (aarPrefs.planetaryTaraAaradhana && profile?.birthNakshatra?.isNotBlank() == true) {
+                        runCatching {
+                            PlanetaryTaraAaradhanaCalculator.calculate(profile.birthNakshatra)
+                                .filter { row -> row.isWarning && aarPrefs.isPlanetaryTaraEnabled(row.planet.name) }
+                                .map { row -> "${row.planet.marathi} — ${row.tara} तारा" }
+                        }.getOrDefault(emptyList())
+                    } else emptyList()
+
+                    AaradhanaVoiceSession.speakCachedSequenceThenAnnouncement(
                         appContext, id, mantraSteps,
-                        aarPrefs.specialJapaCount, pendingResult
+                        aarPrefs.specialJapaCount, finalTaraAnnouncements, pendingResult
                     ) {
                         // The current 301 event has already been consumed. Reconcile
                         // immediately so the next interval is anchored to the saved
