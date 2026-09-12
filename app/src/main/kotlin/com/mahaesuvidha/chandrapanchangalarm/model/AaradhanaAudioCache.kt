@@ -4,6 +4,8 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import java.io.File
 import java.util.Locale
+import android.os.Handler
+import android.os.Looper
 
 /**
  * Creates persistent offline audio for the currently selected Nakshatra/Yoga/Karana mantra.
@@ -27,17 +29,17 @@ object AaradhanaAudioCache {
         var engine: TextToSpeech? = null
         engine = TextToSpeech(context.applicationContext) { status ->
             val tts = engine
-            if (status != TextToSpeech.SUCCESS || tts == null) { onDone(false); return@TextToSpeech }
+            if (status != TextToSpeech.SUCCESS || tts == null) { Handler(Looper.getMainLooper()).post { onDone(false) }; return@TextToSpeech }
             val selected = listOf(Locale("hi", "IN"), Locale("sa", "IN"), Locale("mr", "IN"))
                 .firstOrNull { locale -> ttsAvailable(tts, locale) }
             if (selected != null) tts.language = selected
             tts.setSpeechRate(0.72f)
             val result = tts.synthesizeToFile(mantra, android.os.Bundle(), target, "aaradhana_${type}_${key}")
             if (result != TextToSpeech.SUCCESS) {
-                tts.shutdown(); onDone(false)
+                tts.shutdown(); Handler(Looper.getMainLooper()).post { onDone(false) }
             } else {
                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                    tts.shutdown(); onDone(target.exists() && target.length() > 2048)
+                    tts.shutdown(); Handler(Looper.getMainLooper()).post { onDone(target.exists() && target.length() > 2048) }
                 }, 700)
             }
         }

@@ -18,6 +18,7 @@ import com.mahaesuvidha.chandrapanchangalarm.model.AaradhanaMaster
 import com.mahaesuvidha.chandrapanchangalarm.model.AaradhanaAudioCache
 import com.mahaesuvidha.chandrapanchangalarm.alarm.AlarmScheduler
 import com.mahaesuvidha.chandrapanchangalarm.alarm.AaradhanaVoiceSession
+import com.mahaesuvidha.chandrapanchangalarm.alarm.AaradhanaTestAudioPlayer
 import com.mahaesuvidha.chandrapanchangalarm.model.BirthProfile
 import com.mahaesuvidha.chandrapanchangalarm.model.LiveMoonCalculator
 import com.mahaesuvidha.chandrapanchangalarm.model.PanchangState
@@ -31,6 +32,7 @@ fun AaradhanaScreen(
     onOpenPlanetaryTara: (() -> Unit)? = null
 ) {
     BackHandler(onBack = onBack)
+    DisposableEffect(Unit) { onDispose { AaradhanaTestAudioPlayer.stop() } }
     val context = androidx.compose.ui.platform.LocalContext.current
     val prefs = remember { AaradhanaPrefs(context.applicationContext) }
     var special by remember { mutableStateOf(prefs.specialHourly) }
@@ -286,18 +288,24 @@ fun AaradhanaScreen(
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     OutlinedButton(onClick = {
                         val f = AaradhanaAudioCache.file(context, "nakshatra", moon.nakshatra.marathi)
-                        if (f.exists() && f.length() > 2048) AaradhanaVoiceSession.speakCachedSequence(context, 501, listOf(AaradhanaVoiceSession.AudioStep(audioFile=f, fallbackText=nakInfo.mantra)), 1, null)
-                        else AaradhanaVoiceSession.speakPreview(context, 501, listOf(nakInfo.mantra), 1)
+                        if (f.exists() && f.length() > 2048) {
+                            AaradhanaVoiceSession.stop()
+                            AaradhanaTestAudioPlayer.play(context, f, onError = { AaradhanaVoiceSession.speakPreview(context, 501, listOf(nakInfo.mantra), 1) })
+                        } else AaradhanaVoiceSession.speakPreview(context, 501, listOf(nakInfo.mantra), 1)
                     }, modifier = Modifier.weight(1f)) { Text("⭐ नक्षत्र", fontWeight = FontWeight.Bold) }
                     OutlinedButton(onClick = {
                         val f = AaradhanaAudioCache.file(context, "yoga", panchang.yoga)
-                        if (f.exists() && f.length() > 2048) AaradhanaVoiceSession.speakCachedSequence(context, 502, listOf(AaradhanaVoiceSession.AudioStep(audioFile=f, fallbackText=yogaInfo.mantra)), 1, null)
-                        else AaradhanaVoiceSession.speakPreview(context, 502, listOf(yogaInfo.mantra), 1)
+                        if (f.exists() && f.length() > 2048) {
+                            AaradhanaVoiceSession.stop()
+                            AaradhanaTestAudioPlayer.play(context, f, onError = { AaradhanaVoiceSession.speakPreview(context, 502, listOf(yogaInfo.mantra), 1) })
+                        } else AaradhanaVoiceSession.speakPreview(context, 502, listOf(yogaInfo.mantra), 1)
                     }, modifier = Modifier.weight(1f)) { Text("✨ योग", fontWeight = FontWeight.Bold) }
                     OutlinedButton(onClick = {
                         val f = AaradhanaAudioCache.file(context, "karana", panchang.karana)
-                        if (f.exists() && f.length() > 2048) AaradhanaVoiceSession.speakCachedSequence(context, 503, listOf(AaradhanaVoiceSession.AudioStep(audioFile=f, fallbackText=karanaInfo.mantra)), 1, null)
-                        else AaradhanaVoiceSession.speakPreview(context, 503, listOf(karanaInfo.mantra), 1)
+                        if (f.exists() && f.length() > 2048) {
+                            AaradhanaVoiceSession.stop()
+                            AaradhanaTestAudioPlayer.play(context, f, onError = { AaradhanaVoiceSession.speakPreview(context, 503, listOf(karanaInfo.mantra), 1) })
+                        } else AaradhanaVoiceSession.speakPreview(context, 503, listOf(karanaInfo.mantra), 1)
                     }, modifier = Modifier.weight(1f)) { Text("🔱 करण", fontWeight = FontWeight.Bold) }
                 }
                 Spacer(Modifier.height(6.dp))
